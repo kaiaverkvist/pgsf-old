@@ -1,7 +1,7 @@
 package co.redletterday.pgsf;
 
 import co.redletterday.pgsf.modules.EchoModule;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.net.UnknownHostException;
@@ -26,8 +26,6 @@ class PgsfServerTest {
             e.printStackTrace();
         }
 
-        Assert.assertNotNull("server module list was not initialized properly.", server.getModules());
-
-        Assert.assertEquals(server.getModules().size(), 1);
+        Assertions.assertNotNull(server.getModules(), "server module list was not initialized properly.");
     }
 }

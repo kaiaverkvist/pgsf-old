@@ -2,11 +2,8 @@ package co.redletterday.pgsf;
 
 import co.redletterday.pgsf.module.ServerModule;
 import co.redletterday.pgsf.networking.IncomingMessage;
-import co.redletterday.pgsf.networking.MessageContainer;
-import co.redletterday.pgsf.networking.Payload;
 import co.redletterday.pgsf.networking.payloads.OnWebSocketConnectOrDisconnect;
 import co.redletterday.pgsf.routing.MessageRouter;
-import co.redletterday.pgsf.routing.RegisteredHandler;
 import com.google.gson.Gson;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -17,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.function.Consumer;
 
 /**
  * co.redletterday.PgsfServer is the main runner for the server.
