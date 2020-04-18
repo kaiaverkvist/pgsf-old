@@ -1,10 +1,9 @@
 package co.redletterday.pgsf;
 
 import co.redletterday.pgsf.module.ServerModule;
-import co.redletterday.pgsf.networking.IncomingMessage;
+import co.redletterday.pgsf.networking.Payload;
 import co.redletterday.pgsf.networking.payloads.OnWebSocketConnectOrDisconnect;
 import co.redletterday.pgsf.routing.MessageRouter;
-import com.google.gson.Gson;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
@@ -41,9 +40,8 @@ public class PgsfServer extends WebSocketServer {
 
         // We create an artificial disconnect/connect message.
         OnWebSocketConnectOrDisconnect payload = new OnWebSocketConnectOrDisconnect("connect");
-        IncomingMessage message = new IncomingMessage(payload.getClass().getName(), payload);
 
-        router.route(sender, message);
+        router.route(sender, payload);
 
         logger.debug(sender.getRemoteSocketAddress() + " connected.");
     }
@@ -53,9 +51,8 @@ public class PgsfServer extends WebSocketServer {
 
         // We create an artificial disconnect/connect message.
         OnWebSocketConnectOrDisconnect payload = new OnWebSocketConnectOrDisconnect(reason);
-        IncomingMessage message = new IncomingMessage(payload.getClass().getName(), payload);
 
-        router.route(sender, message);
+        router.route(sender, payload);
 
         logger.debug(sender.getRemoteSocketAddress() + " disconnected.");
     }
@@ -63,10 +60,12 @@ public class PgsfServer extends WebSocketServer {
     @Override
     public void onMessage(WebSocket sender, String messageJson) {
 
-        Gson gson = new Gson();
-        IncomingMessage incomingMessage = gson.fromJson(messageJson, IncomingMessage.class);
-
-        router.route(sender, incomingMessage);
+        try {
+            Payload payload = PayloadMutator.mutateJsonToPayload(messageJson);
+            router.route(sender, payload);
+        } catch(Exception ex) {
+            logger.error("Unable to parse json: {} (contents: {})", ex.getMessage(), messageJson);
+        }
     }
 
     @Override
@@ -76,7 +75,7 @@ public class PgsfServer extends WebSocketServer {
 
     @Override
     public void onStart() {
-
+        logger.debug("OnStart called");
     }
 
     @Override
@@ -92,7 +91,7 @@ public class PgsfServer extends WebSocketServer {
         hasStarted = true;
 
 
-        logger.debug("Starting PgsfServer.");
+        logger.debug("Starting PgsfServer. (10:58)");
         logger.debug("WebSocket server has started. Port: {}", this.getPort());
     }
 

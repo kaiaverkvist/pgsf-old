@@ -11,6 +11,7 @@ public class MessageContainer<T> {
     public T payload;
 
     public MessageContainer(WebSocket sender, T payload) {
-
+        this.sender = sender;
+        this.payload = payload;
     }
 }

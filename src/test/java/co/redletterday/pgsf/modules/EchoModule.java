@@ -9,14 +9,14 @@ import org.slf4j.LoggerFactory;
 
 public class EchoModule implements ServerModule {
 
-    static Logger logger = LoggerFactory.getLogger(PgsfServer.class);
+    static Logger logger = LoggerFactory.getLogger(EchoModule.class);
 
     public void onInit(PgsfServer server) {
         logger.info("EchoModule onInit() called.");
 
-        server.router.register(new RegisteredHandler<TestPayload>(s -> {
-            System.out.println(s.sender.getRemoteSocketAddress());
-            System.out.println(s.payload.name);
+        server.router.register(new RegisteredHandler<TestPayload>(TestPayload.class, s -> {
+
+            System.out.println("Payload called with name: " + s.payload.name);
         }));
     }
 

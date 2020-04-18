@@ -1,8 +1,9 @@
 package co.redletterday.pgsf.routing;
 
+import co.redletterday.pgsf.PayloadMutator;
 import co.redletterday.pgsf.PgsfServer;
 import co.redletterday.pgsf.modules.EchoModule;
-import co.redletterday.pgsf.networking.IncomingMessage;
+import co.redletterday.pgsf.networking.Payload;
 import co.redletterday.pgsf.payloads.TestPayload;
 
 import org.junit.jupiter.api.Assertions;
@@ -12,8 +13,6 @@ import java.net.UnknownHostException;
 
 class MessageRouterTest {
 
-    private PgsfServer server;
-
     public MessageRouterTest() {
 
     }
@@ -21,7 +20,7 @@ class MessageRouterTest {
     @Test
     void testRegister() {
         try {
-            server = new PgsfServer(8085);
+            PgsfServer server = new PgsfServer(8083);
 
             // Check that we have an empty module list.
             Assertions.assertEquals(0, server.getModules().size(), "server module list size was not 0 prior to register()");
@@ -38,18 +37,49 @@ class MessageRouterTest {
     }
 
     @Test
-    void testRoute() {
+    void testRouteFromPayload() {
         try {
-            server = new PgsfServer(8085);
+            PgsfServer server  = new PgsfServer(8084);
 
             // Register the test module.
             server.register(new EchoModule());
 
-            IncomingMessage incomingMessage = new IncomingMessage(TestPayload.class.getName(), new TestPayload("sss"));
+            // Starts the server.
+            server.start();
 
-            int count = server.router.route(null, incomingMessage);
+            // Let's route a test payload and check how many handlers got executed.
+            TestPayload payload = new TestPayload("sss");
+            int count = server.router.route(null, payload);
 
-            Assertions.assertEquals(0, count, "routing did not trigger the expected callback count");
+            Assertions.assertEquals(1, count, "routing did not trigger the expected callback count");
+
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void testRouteFromJson() {
+        try {
+            PgsfServer server  = new PgsfServer(8085);
+
+            // Register the test module.
+            server.register(new EchoModule());
+
+            // Starts the server.
+            server.start();
+
+            // Create a test payload and serialize it to a string.
+            TestPayload testPayload = new TestPayload("sss");
+            String json = PayloadMutator.mutatePayloadToJson(testPayload);
+
+            // Get the Payload implementation from the json string.
+            Payload finalPayload = PayloadMutator.mutateJsonToPayload(json);
+
+            // Feed the final payload into the router.
+            int count = server.router.route(null, finalPayload);
+
+            Assertions.assertEquals(1, count, "routing did not trigger the expected callback count");
 
         } catch (UnknownHostException e) {
             e.printStackTrace();
