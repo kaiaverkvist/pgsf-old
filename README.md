@@ -6,6 +6,17 @@ designed to make websocket game servers as easy as possible.
 
 ## Basic usage
 
+### Installation
+
+Add to your pom.xml:
+```
+<dependency>
+  <groupId>co.redletterday</groupId>
+  <artifactId>pgsf</artifactId>
+  <version>1.1.0-snapshot</version>
+</dependency>
+```
+
 *Temporary documentation:* see file: [USAGE.md](USAGE.md).
 
 ## Contribution
